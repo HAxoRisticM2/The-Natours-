@@ -96,7 +96,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 });
 
 //DOCUMENT MIDDLEWARE: run only before save() and create() {these are moongose middleware}
-
+//Also called as pre  save hook
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
