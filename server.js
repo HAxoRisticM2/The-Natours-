@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const dontenv = require('dotenv');
+// const Tour = require('./models/tourModel');
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION.. SHUTTING DOWN SERVER');
@@ -18,8 +19,12 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
+  .then(async () => {
     console.log('DB connection successfull');
+
+    //USED  FOR FORCE SYNCHRONOUSLY TO SYNC THE INDEXES
+    // await Tour.syncIndexes();
+    // console.log('Tour indexes synced');
   });
 
 //For local database connection USE .connect(process.env.DATABASE_LOCAL;

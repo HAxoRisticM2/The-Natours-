@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
@@ -12,13 +13,21 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
-
-// Set security HTTP headers
-app.use(helmet());
+const reviewRouter = require('./routes/reviewRouter');
 
 // body parser , reading data from  body  into req.body
 // limit the size of the request body
 app.use(express.json({ limit: '10kb' }));
+
+//used to render the pug template
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+//serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+///////Set security HTTP headers
+// This middleware helps to set various HTTP headers to help protect the app from well-known web vulnerabilities by setting HTTP headers appropriately.
+app.use(helmet());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -38,9 +47,6 @@ app.use(
     ],
   }),
 );
-
-//serving static files
-app.use(express.static(`${__dirname}/public`));
 
 // Limit requests from the same API
 const limiter = rateLimit({
@@ -62,38 +68,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.get('/', (req, res) => {
-//   res
-//     .status(200)
-//     .json({ message: 'aslam u alikum from the server', app: 'natours' });
-// });
-
-// app.post('/', (req, res) => {
-//   res.send('You can post to this endpoint...');
-// });
-
-////// /////////////////////OLDER VERSION OF ROUTING//////////////////////////////////
-
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', AddTour);
-// app.get('/api/v1/tours/:id', getTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
-
 /////////MOUNTING ROUTERS
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 /// //handling undefined routes
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'fail',
-  //   message: `Can't find ${req.originalUrl}on this server`,
-  // });
-  // const err = new Error(`Can't find ${req.originalUrl}on this server`);
-  // err.statusCode = 404;
-  // err.status = 'fail';
-
   next(new AppError(`Can't find ${req.originalUrl}on this server`, 404));
 });
 
