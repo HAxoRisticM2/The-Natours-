@@ -14,10 +14,13 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
 const reviewRouter = require('./routes/reviewRouter');
+const viewRouter = require('./routes/viewRouter');
+const cookieParser = require('cookie-parser');
 
 // body parser , reading data from  body  into req.body
 // limit the size of the request body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //used to render the pug template
 app.set('view engine', 'pug');
@@ -69,10 +72,7 @@ app.use((req, res, next) => {
 });
 
 /////////MOUNTING ROUTERS
-app.get('/', (req, res) => {
-  res.status(200).render('base');
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
