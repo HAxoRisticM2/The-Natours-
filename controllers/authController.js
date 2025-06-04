@@ -5,6 +5,7 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
 const User = require('../models/userModel');
+const { promisify } = require('util');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -79,6 +80,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   // Check if token exists
@@ -89,7 +92,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   // Verify token
-  const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //verify if user still exists
   const freshUser = await User.findById(decoded.id);
@@ -112,7 +115,29 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
-
+//
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // Verify token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET,
+    );
+    //verify if user still exists
+    const freshUser = await User.findById(decoded.id);
+    if (!freshUser) {
+      return next();
+    }
+    //verify if user changed password after token was issued
+    if (freshUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    // Grant access to protected route
+    res.locals.user = freshUser;
+    return next();
+  }
+  next();
+});
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

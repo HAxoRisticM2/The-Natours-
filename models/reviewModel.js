@@ -41,7 +41,7 @@ reviewSchema.pre(/^find/, function (next) {
   //this is the expresssion that selects all the expression that starts with find string
   this.populate({
     path: 'user',
-    select: 'name ',
+    select: 'name photo',
   });
   next();
 });
