@@ -21,6 +21,7 @@ const cookieParser = require('cookie-parser');
 // limit the size of the request body
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 //used to render the pug template
 app.set('view engine', 'pug');

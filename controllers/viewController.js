@@ -1,5 +1,7 @@
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.getOverview = catchAsync(async (req, res, next) => {
   // 1) Get all tours from the database
@@ -36,17 +38,55 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 exports.getLoginForm = (req, res) => {
+  res.status(200);
   res
-    .status(200)
     .set(
       'Content-Security-Policy',
       "default-src 'self'; " +
-        "script-src 'self' https://cdn.jsdelivr.net; " +
-        "style-src 'self' https://fonts.googleapis.com; " +
+        "script-src 'self' https://cdn.jsdelivr.net https://api.mapbox.com; " +
+        "style-src 'self' https://fonts.googleapis.com https://api.mapbox.com 'unsafe-inline'; " +
         "font-src 'self' https://fonts.gstatic.com; " +
-        "connect-src 'self';",
+        "img-src 'self' data: blob: https://*.tiles.mapbox.com https://api.mapbox.com; " +
+        "connect-src 'self' ws://127.0.0.1:* https://*.tiles.mapbox.com https://api.mapbox.com https://events.mapbox.com; " +
+        "worker-src 'self' blob:; " +
+        "object-src 'none';",
     )
     .render('login', {
       title: 'Log into your account',
     });
 };
+exports.getAccount = (req, res) => {
+  res.status(200);
+  res
+    .set(
+      'Content-Security-Policy',
+      "default-src 'self'; " +
+        "script-src 'self' https://cdn.jsdelivr.net https://api.mapbox.com; " +
+        "style-src 'self' https://fonts.googleapis.com https://api.mapbox.com 'unsafe-inline'; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob: https://*.tiles.mapbox.com https://api.mapbox.com; " +
+        "connect-src 'self' ws://127.0.0.1:* https://*.tiles.mapbox.com https://api.mapbox.com https://events.mapbox.com; " +
+        "worker-src 'self' blob:; " +
+        "object-src 'none';",
+    )
+    .render('account', {
+      title: 'Your Account',
+    });
+};
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  const UpdatUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+  res.status(200).render('account', {
+    title: 'Your Account',
+    user: UpdatUser,
+  });
+});
