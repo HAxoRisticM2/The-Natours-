@@ -31,7 +31,34 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 ///////Set security HTTP headers
 // This middleware helps to set various HTTP headers to help protect the app from well-known web vulnerabilities by setting HTTP headers appropriately.
-app.use(helmet());
+// app.use(helmet());
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://api.tiles.mapbox.com'],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'https://api.tiles.mapbox.com',
+        'https://fonts.googleapis.com',
+      ],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      connectSrc: [
+        "'self'",
+        'https://*.mapbox.com',
+        'https://api.mapbox.com',
+        'https://events.mapbox.com',
+        'ws://127.0.0.1:*',
+        'http://127.0.0.1:*',
+        'blob:',
+      ],
+      imgSrc: ["'self'", 'https://*.mapbox.com', 'data:'],
+      objectSrc: ["'none'"],
+    },
+  }),
+);
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
