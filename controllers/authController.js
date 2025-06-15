@@ -69,8 +69,6 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect username or password', 401));
   }
 
-  console.log(user);
-
   createSendToken(user, 200, res);
 });
 
@@ -181,8 +179,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetURL = `${req.protocol}://${req.get(
       'host',
     )}/api/v1/users/resetPassword/${resetToken}`;
-    console.log(resetURL);
-    console.log(user.name);
+
     await new Email(user, resetURL).sendPasswordReset();
 
     res.status(200).json({

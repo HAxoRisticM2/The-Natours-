@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const compression = require('compression');
 
 ////middleware
 const AppError = require('./utils/appError');
@@ -59,13 +60,6 @@ app.use(
     },
   }),
 );
-
-// Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
-
-// Data sanitization against XSS
-app.use(xss());
-// Prevent parameter pollution
 app.use(
   hpp({
     whitelist: [
@@ -78,6 +72,14 @@ app.use(
     ],
   }),
 );
+// Compress all routes
+app.use(compression());
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+// Prevent parameter pollution
 
 // Limit requests from the same API
 const limiter = rateLimit({

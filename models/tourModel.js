@@ -165,7 +165,7 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 tourSchema.post(/'^find'/, (doc, next) => {
-  console.log(doc);
+  //  console.log(doc);
 });
 
 // tourSchema.pre('aggregate', function (next) {
