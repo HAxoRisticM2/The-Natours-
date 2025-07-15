@@ -1,6 +1,13 @@
 
 # 🌍 Natours – Tour Booking Platform
 
+![GitHub last commit](https://img.shields.io/github/last-commit/HAxoRisticM2/The-Natours-?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/HAxoRisticM2/The-Natours-?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge&logo=node.js)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen?style=for-the-badge&logo=mongodb)
+![Pug](https://img.shields.io/badge/Templating-Pug-yellow?style=for-the-badge)
+![Deployed](https://img.shields.io/badge/Deployed-Render-blue?style=for-the-badge&logo=render)
+
 Natours is a full-stack web application built for users who want to explore and book nature tours around the world. Developed using **Node.js**, **MongoDB**, **Pug**, **HTML**, and **CSS**, it features authentication, email services, image upload, and a beautiful UI rendered using the Pug template engine.
 
 ---
